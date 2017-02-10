@@ -3,3 +3,4 @@
 *.zip
 
 # ignore all files at /Debug directory
+/txt
