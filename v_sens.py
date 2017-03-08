@@ -21,6 +21,59 @@ def get_inputfile():
     #print(flist)
     return flist
 
+def fft_readDataSource(filename):
+    f = open(filename, 'r')
+    lines = f.readlines()
+    f.close()
+
+    return lines
+
+
+def preprocess_files(flist):
+
+    side_cnt = -1
+    top_cnt = -1
+    gen_file_list = []
+
+    for name in flist:
+        pos = []
+        f_gen_name = []
+        f_date = name.split('-')[0]
+
+        if name.find("SIDE") != -1:
+            side_cnt = side_cnt + 1
+            f_name = f_date + "_SIDE_" + str(side_cnt)
+        elif name.find("TOP") != -1:
+            top_cnt = top_cnt + 1
+            f_name = f_date + "_TOP_" + str(top_cnt)
+
+        print(f_name)
+
+        # find >LOAD line
+        lines = fft_readDataSource(name)
+        for line in lines:
+            if line.find("LOAD ") != -1:
+                pos.append(lines.index(line))
+                gen_file_list.append(f_name + "_" + line.split(' ')[-1].strip() + ".txt")
+                f_gen_name.append(gen_file_list[-1])
+
+        print(pos)
+        print(f_gen_name)
+
+        fp = open(f_gen_name[0], 'w')
+        for line in lines[pos[0]:pos[1]]:
+            fp.write(line)
+        fp.close()
+
+        fp = open(f_gen_name[1], 'w')
+        for line in lines[pos[1]:]:
+            fp.write(line)
+        fp.close()
+
+
+    return gen_file_list
+
+
 def fft_genFilename(filename):
     out_file = []
     out_file.append(file_prefix[0] + filename)
@@ -30,12 +83,6 @@ def fft_genFilename(filename):
     #print(out_file)
     return out_file
 
-def fft_readDataSource(filename):
-    f = open(filename, 'r')
-    lines = f.readlines()
-    f.close()
-
-    return lines
 
 def fft_getDataCount(lines):
     count=0
@@ -81,8 +128,10 @@ def fft_extractFFT(cnt, fft_lines, filename):
 if __name__ == '__main__':
 
     input_list = get_inputfile()
-    #print(input_list)
-    for input in input_list:
+    process_list = preprocess_files(input_list)
+
+    print(process_list)
+    for input in process_list:
         #input = input_list[1]
         print(input)
         src = fft_readDataSource(input)
