@@ -28,7 +28,8 @@ def fft_readDataSource(filename):
 
     return lines
 
-
+#separate FFT data for 13kg and 27kg, store data at separate file
+#generate output filename with TOP, SIDE and index
 def preprocess_files(flist):
 
     side_cnt = -1
@@ -47,7 +48,7 @@ def preprocess_files(flist):
             top_cnt = top_cnt + 1
             f_name = f_date + "_TOP_" + str(top_cnt)
 
-        print(f_name)
+        #print(f_name)
 
         # find >LOAD line
         lines = fft_readDataSource(name)
@@ -57,8 +58,11 @@ def preprocess_files(flist):
                 gen_file_list.append(f_name + "_" + line.split(' ')[-1].strip() + ".txt")
                 f_gen_name.append(gen_file_list[-1])
 
-        print(pos)
-        print(f_gen_name)
+        #print(pos)
+        #print(f_gen_name)
+        if len(pos) != 2:
+            print("LOAD is not enough!")
+            return []
 
         fp = open(f_gen_name[0], 'w')
         for line in lines[pos[0]:pos[1]]:
@@ -129,6 +133,9 @@ if __name__ == '__main__':
 
     input_list = get_inputfile()
     process_list = preprocess_files(input_list)
+
+    if process_list == []:
+        exit(1)
 
     print(process_list)
     for input in process_list:
