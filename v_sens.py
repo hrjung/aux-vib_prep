@@ -43,10 +43,10 @@ def preprocess_files(flist):
 
         if name.find("SIDE") != -1:
             side_cnt = side_cnt + 1
-            f_name = f_date + "_SIDE_" + str(side_cnt)
+            f_name = "SIDE_$_" + f_date + str(side_cnt)
         elif name.find("TOP") != -1:
             top_cnt = top_cnt + 1
-            f_name = f_date + "_TOP_" + str(top_cnt)
+            f_name = "TOP_$_" + f_date + str(top_cnt)
 
         #print(f_name)
 
@@ -80,9 +80,9 @@ def preprocess_files(flist):
 
 def fft_genFilename(filename):
     out_file = []
-    out_file.append(file_prefix[0] + filename)
-    out_file.append(file_prefix[1] + filename)
-    out_file.append(file_prefix[2] + filename)
+    out_file.append(filename.replace("$_", "x_20"))
+    out_file.append(filename.replace("$_", "y_20"))
+    out_file.append(filename.replace("$_", "z_20"))
 
     #print(out_file)
     return out_file
