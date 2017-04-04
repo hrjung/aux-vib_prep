@@ -34,6 +34,8 @@ def preprocess_files(flist):
 
     side_cnt = -1
     top_cnt = -1
+    right_cnt = -1
+    left_cnt = -1
     gen_file_list = []
 
     for name in flist:
@@ -43,37 +45,54 @@ def preprocess_files(flist):
 
         if name.find("SIDE") != -1:
             side_cnt = side_cnt + 1
-            f_name = "SIDE_$_" + f_date + str(side_cnt)
+            f_name = "SIDE_$_" + f_date + "_" + str(side_cnt)
         elif name.find("TOP") != -1:
             top_cnt = top_cnt + 1
-            f_name = "TOP_$_" + f_date + str(top_cnt)
+            f_name = "TOP_$_" + f_date + "_" + str(top_cnt)
+        elif name.find("RIGHT") != -1:
+            right_cnt = right_cnt + 1
+            f_name = "RIGHT_$_" + f_date + "_" + str(right_cnt)
+        elif name.find("LEFT") != -1:
+            left_cnt = left_cnt + 1
+            f_name = "LEFT_$_" + f_date + "_" + str(left_cnt)
 
         #print(f_name)
 
-        # find >LOAD line
+        # find >LOAD and KGF in line
         lines = fft_readDataSource(name)
         for line in lines:
-            if line.find("LOAD ") != -1:
+            #if line.find("LOAD ") != -1:
+            if "LOAD" in line and "KGF" in line:
                 pos.append(lines.index(line))
                 gen_file_list.append(f_name + "_" + line.split(' ')[-1].strip() + ".txt")
                 f_gen_name.append(gen_file_list[-1])
 
-        #print(pos)
+        pos.append(len(lines)) # add last line of file
+        # print(pos)
+        # print(len(pos))
+
         #print(f_gen_name)
-        if len(pos) != 2:
-            print("LOAD is not enough!")
-            return []
+        # if len(pos) != 2:
+        #     print("LOAD is not enough!")
+        #     return []
 
-        fp = open(f_gen_name[0], 'w')
-        for line in lines[pos[0]:pos[1]]:
-            fp.write(line)
-        fp.close()
+        index=0
+        for f_gen in f_gen_name:
+            fp = open(f_gen, 'w')
+            for line in lines[pos[index]:pos[index+1]]:
+                fp.write(line)
+            fp.close()
+            print(f_gen, index)
+            if index == len(pos)-1:
+                break
+            index += 1
 
-        fp = open(f_gen_name[1], 'w')
-        for line in lines[pos[1]:]:
-            fp.write(line)
-        fp.close()
-
+        # index = len(pos)-1
+        # fp = open(f_gen_name[index], 'w')
+        # for line in lines[pos[index]:]:
+        #     fp.write(line)
+        # fp.close()
+        # print(f_gen, index)
 
     return gen_file_list
 
