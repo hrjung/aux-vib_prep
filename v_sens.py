@@ -4,6 +4,7 @@ import glob
 import numpy as np
 
 fft_count=64
+sens_count=128
 
 file_prefix = ["fft_x_20", "fft_y_20", "fft_z_20"]
 
@@ -62,7 +63,7 @@ def preprocess_files(flist):
         lines = fft_readDataSource(name)
         for line in lines:
             #if line.find("LOAD ") != -1:
-            if "LOAD" in line and "KGF" in line:
+            if "LOAD" in line:
                 pos.append(lines.index(line))
                 gen_file_list.append(f_name + "_" + line.split(' ')[-1].strip() + ".txt")
                 f_gen_name.append(gen_file_list[-1])
@@ -120,6 +121,19 @@ def fft_getDataCount(lines):
     #print(len(fft_lines))
     return count, fft_lines
 
+def sens_getDataCount(lines):
+    count=0
+    sens_lines = []
+    for line in lines:
+        if line.find("D=0") > -1:
+            count = count+1
+
+        if line[0] == 'D' and line[1] == '=':
+            sens_lines.append(line)
+
+    #print(len(fft_lines))
+    return count, sens_lines
+
 def fft_extractFFT(cnt, fft_lines, filename):
     fft_x = np.zeros((fft_count, cnt), dtype=np.int32)
     fft_y = np.zeros((fft_count, cnt), dtype=np.int32)
@@ -148,6 +162,34 @@ def fft_extractFFT(cnt, fft_lines, filename):
     np.savetxt(out_filename[2], fft_z, fmt='%d', delimiter=' ')
 
 
+def sens_extractData(cnt, sens_lines, filename):
+    sens_x = np.zeros((sens_count, cnt), dtype=np.int32)
+    sens_y = np.zeros((sens_count, cnt), dtype=np.int32)
+    sens_z = np.zeros((sens_count, cnt), dtype=np.int32)
+
+    col = -1
+    for line in sens_lines:
+        if line[2] == '0' :
+            col = col + 1
+
+        s_data = line.split('\t')
+        #print(fft)
+        s_data[0] = s_data[0].replace("D=", " ").strip()
+        row = int(s_data[0])
+        s_data[3] = s_data[3].strip()
+        #print(fft, col)
+
+        sens_x[row, col] = int(s_data[1])
+        sens_y[row, col] = int(s_data[2])
+        sens_z[row, col] = int(s_data[3])
+
+    sens_file = "AS_" + filename
+    out_filename = fft_genFilename(sens_file)
+    #print(out_filename)
+    np.savetxt(out_filename[0], sens_x, fmt='%d', delimiter=' ')
+    np.savetxt(out_filename[1], sens_y, fmt='%d', delimiter=' ')
+    np.savetxt(out_filename[2], sens_z, fmt='%d', delimiter=' ')
+
 if __name__ == '__main__':
 
     input_list = get_inputfile()
@@ -166,4 +208,9 @@ if __name__ == '__main__':
         print(count)
 
         fft_extractFFT(count, fft_list, input)
+
+        count, sens_list = sens_getDataCount(src)
+        print(count)
+
+        sens_extractData(count, sens_list, input)
 
