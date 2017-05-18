@@ -42,7 +42,9 @@ def preprocess_files(flist):
     for name in flist:
         pos = []
         f_gen_name = []
-        f_date = name.split('-')[0]
+        #f_date = name.split('-')[0]
+        f_date = name.split(' ')[0]
+        #print(f_date)
 
         if name.find("SIDE") != -1:
             side_cnt = side_cnt + 1
@@ -63,9 +65,19 @@ def preprocess_files(flist):
         lines = fft_readDataSource(name)
         for line in lines:
             #if line.find("LOAD ") != -1:
-            if "LOAD" in line:
+            if "NO LOAD" in line :
+                pos.append(lines.index(line))
+                gen_file_list.append(f_name + "_" + "no_load" + ".txt")
+                f_gen_name.append(gen_file_list[-1])
+
+            elif "LOAD" in line :
                 pos.append(lines.index(line))
                 gen_file_list.append(f_name + "_" + line.split(' ')[-1].strip() + ".txt")
+                f_gen_name.append(gen_file_list[-1])
+
+            elif "REFERENCE" in line:
+                pos.append(lines.index(line))
+                gen_file_list.append(f_name + "_" + "REF" + ".txt")
                 f_gen_name.append(gen_file_list[-1])
 
         pos.append(len(lines)) # add last line of file
@@ -213,4 +225,6 @@ if __name__ == '__main__':
         print(count)
 
         sens_extractData(count, sens_list, input)
+
+        os.remove(input) # remove preprocessed file
 

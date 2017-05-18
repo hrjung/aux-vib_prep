@@ -1,7 +1,0 @@
-# ignore .d extension
-*.txt
-*.zip
-
-# ignore all files at /Debug directory
-/txt
-/data
