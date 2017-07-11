@@ -37,6 +37,8 @@ def preprocess_files(flist):
     top_cnt = -1
     right_cnt = -1
     left_cnt = -1
+    ob_cnt = -1
+    ca_cnt = -1
     gen_file_list = []
 
     for name in flist:
@@ -58,6 +60,12 @@ def preprocess_files(flist):
         elif name.find("LEFT") != -1:
             left_cnt = left_cnt + 1
             f_name = "LEFT_$_" + f_date + "_" + str(left_cnt)
+        elif name.find("OB") != -1:
+            ob_cnt = ob_cnt + 1
+            f_name = "OB_$_" + f_date + "_" + str(ob_cnt)
+        elif name.find("Ca") != -1:
+            ca_cnt = ca_cnt + 1
+            f_name = "CA_$_" + f_date + "_" + str(ca_cnt)
 
         #print(f_name)
 
@@ -84,7 +92,7 @@ def preprocess_files(flist):
         # print(pos)
         # print(len(pos))
 
-        #print(f_gen_name)
+        print(f_gen_name)
         # if len(pos) != 2:
         #     print("LOAD is not enough!")
         #     return []
