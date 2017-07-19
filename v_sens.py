@@ -79,9 +79,12 @@ def preprocess_files(flist):
                 f_gen_name.append(gen_file_list[-1])
 
             elif "LOAD" in line :
-                pos.append(lines.index(line))
-                gen_file_list.append(f_name + "_" + line.split(' ')[-1].strip() + ".txt")
-                f_gen_name.append(gen_file_list[-1])
+                if line.split(' ')[-1].strip() == "KGF-M" or line.split(' ')[-1].strip() == "KGF" :
+                    pos.append(lines.index(line))
+                    gen_file_list.append(
+                    #gen_file_list.append(f_name + "_" + line.split(' ')[-1].strip() + ".txt")
+                    gen_file_list.append(f_name + "_" + line.split(' ')[-2].strip() + line.split(' ')[-1].strip() + ".txt")
+                    f_gen_name.append(gen_file_list[-1])
 
             elif "REFERENCE" in line:
                 pos.append(lines.index(line))
@@ -92,7 +95,7 @@ def preprocess_files(flist):
         # print(pos)
         # print(len(pos))
 
-        print(f_gen_name)
+        #print(f_gen_name)
         # if len(pos) != 2:
         #     print("LOAD is not enough!")
         #     return []
