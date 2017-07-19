@@ -81,7 +81,6 @@ def preprocess_files(flist):
             elif "LOAD" in line :
                 if line.split(' ')[-1].strip() == "KGF-M" or line.split(' ')[-1].strip() == "KGF" :
                     pos.append(lines.index(line))
-                    gen_file_list.append(
                     #gen_file_list.append(f_name + "_" + line.split(' ')[-1].strip() + ".txt")
                     gen_file_list.append(f_name + "_" + line.split(' ')[-2].strip() + line.split(' ')[-1].strip() + ".txt")
                     f_gen_name.append(gen_file_list[-1])
