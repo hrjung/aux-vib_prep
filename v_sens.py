@@ -2,11 +2,15 @@ import sys
 import os
 import glob
 import numpy as np
+import zipfile
 
 fft_count=64
 sens_count=128
 
+sens_zip_file = []
+fft_zip_file = []
 file_prefix = ["fft_x_20", "fft_y_20", "fft_z_20"]
+
 
 def get_inputfile():
     flist = []
@@ -183,6 +187,10 @@ def fft_extractFFT(cnt, fft_lines, filename):
     np.savetxt(out_filename[1], fft_y, fmt='%d', delimiter=' ')
     np.savetxt(out_filename[2], fft_z, fmt='%d', delimiter=' ')
 
+    fft_zip_file.append(out_filename[0])
+    fft_zip_file.append(out_filename[1])
+    fft_zip_file.append(out_filename[2])
+
 
 def sens_extractData(cnt, sens_lines, filename):
     sens_x = np.zeros((sens_count, cnt), dtype=np.int32)
@@ -212,6 +220,35 @@ def sens_extractData(cnt, sens_lines, filename):
     np.savetxt(out_filename[1], sens_y, fmt='%d', delimiter=' ')
     np.savetxt(out_filename[2], sens_z, fmt='%d', delimiter=' ')
 
+    sens_zip_file.append(out_filename[0])
+    sens_zip_file.append(out_filename[1])
+    sens_zip_file.append(out_filename[2])
+
+
+def zip_compress(filename, zip_list):
+
+    f_date = filename.split(' ')[0]
+    out_zip_name = ""
+    if zip_list[0].find("500KG") != -1 and zip_list[0].find("AS") != -1:
+        out_zip_name = f_date + "_sm_" + "sensor.zip"
+    elif zip_list[0].find("500KG") != -1 and zip_list[0].find("AS") == -1:
+        out_zip_name = f_date + "_sm_" + "fft.zip"
+    elif zip_list[0].find("500KG") == -1 and zip_list[0].find("AS") != -1:
+        out_zip_name = f_date + "_sensor.zip"
+    elif zip_list[0].find("500KG") == -1 and zip_list[0].find("AS") == -1:
+        out_zip_name = f_date + "_fft.zip"
+    else:
+        print("out zip name error")
+
+    zip = zipfile.ZipFile(out_zip_name, 'w')
+
+    for file in zip_list:
+        zip.write(file, compress_type=zipfile.ZIP_DEFLATED)
+
+    zip.close()
+    print(out_zip_name)
+
+
 if __name__ == '__main__':
 
     input_list = get_inputfile()
@@ -237,4 +274,10 @@ if __name__ == '__main__':
         sens_extractData(count, sens_list, input)
 
         os.remove(input) # remove preprocessed file
+
+    zip_compress(input_list[0], sens_zip_file)
+    zip_compress(input_list[0], fft_zip_file)
+
+    # print(fft_zip_file)
+    # print(sens_zip_file)
 
