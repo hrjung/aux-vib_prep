@@ -227,7 +227,7 @@ def sens_extractData(cnt, sens_lines, filename):
 
 def zip_compress(filename, zip_list):
 
-    f_date = filename.split(' ')[0]
+    f_date = "20" + filename.split(' ')[0]
     out_zip_name = ""
     if zip_list[0].find("500KG") != -1 and zip_list[0].find("AS") != -1:
         out_zip_name = f_date + "_sm_" + "sensor.zip"
